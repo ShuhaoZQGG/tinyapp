@@ -19,15 +19,11 @@ const urlDatabase = {
 };
 
 app.get("/", (req, res) => {
-  res.send("Hello! This is express server home page");
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.get('/urls', (req, res) => {
@@ -48,7 +44,10 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {username: req.cookies["username"], shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const username = req.cookies["username"];
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  const templateVars = {username, shortURL, longURL};
   res.render("urls_show", templateVars);
 });
 
