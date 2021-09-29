@@ -13,7 +13,7 @@
   <% if (statusCode !== 200) { %>
     <div style="margin-top: 100px">
       <h4 class="text-danger" style = "text-align: center;">Error: <%= statusCode %></h4>
-      <h4 class="text-danger" style = "text-align: center;"><%= message %></h4>
+      <h4 class="text-danger" style = "text-align: center;"><%= statusMessage %></h4>
     </div>
   <% } %>
   <h1 style="text-align: center; margin-top: 100px; -moz-user-select: none;
@@ -29,6 +29,18 @@
     Password: <input name = "password" type = "password" style="height: 40px; margin-top: 40px; margin-right: 25px;">
     <br>
     <button type ="submit" class="btn btn-warning" style = "margin-top: 40px;">Register</button>
+  </form>
+  <form method="GET" action="/login" style="text-align: center; margin-top: 20px;-moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;">
+    <button type ="submit" class="btn btn-primary">I have an account, Log In</button>
+  </form>
+  <form method="GET" action="/urls" style="text-align: center; margin-top: 60px;-moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;">
+    <button type ="submit" class="btn btn-secondary">Continue as a Guest</button>
   </form>
     <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

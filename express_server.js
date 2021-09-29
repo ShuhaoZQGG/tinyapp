@@ -55,30 +55,26 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  const statusCode = res.statusCode
-  const message = res.statusMessage
-  const templateVars =  {statusCode, message}
-  res.render('user_registration', templateVars)
+  const {statusCode, statusMessage} = res;
+  const templateVars =  {statusCode, statusMessage};
+  res.render('user_registration', templateVars);
 })
 
 app.post('/register', (req, res) => {
   const {email, password} = req.body;
   let user_id = addUser(users, email, password);
+  let {statusCode, statusMessage} = res
   if ( user_id === "User exists") {
-    res.statusCode = 400;
-    res.statusMessage = "User exists"
-    const statusCode = res.statusCode
-    const message = res.statusMessage
-    const templateVars =  {statusCode, message}
+    statusCode = 400;
+    statusMessage = "User exists"
+    const templateVars =  {statusCode, statusMessage}
     user_id = false;
     res.cookie("user_id", user_id);
     res.render('user_registration', templateVars)
   } else if (user_id === "Email or Password cannot be empty" ) {
-    res.statusCode = 400;
-    res.statusMessage = "Email or Password cannot be empty"
-    const statusCode = res.statusCode
-    const message = res.statusMessage
-    const templateVars =  {statusCode, message}
+    statusCode = 400;
+    statusMessage = "Email or Password cannot be empty"
+    const templateVars =  {statusCode, statusMessage}
     user_id = false;
     res.cookie("user_id", user_id);
     res.render('user_registration', templateVars)
@@ -118,6 +114,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
   urlDatabase[shortURL] = req.body.newURL;
   res.redirect(`/urls/${shortURL}`);
 })
+
 app.get("/login", (req, res) => {
   const {statusCode, statusMessage} = res;
   const templateVars =  {statusCode, statusMessage}
@@ -138,7 +135,7 @@ app.post("/login", (req, res) => {
     res.render("user_login", templateVars)
   } else if (user_id === "Invalid Password") {
     statusCode = 403;
-    statusMessage = "Invalid Account"
+    statusMessage = "Invalid Password"
     const templateVars =  {statusCode, statusMessage}
     user_id = false;
     res.cookie("user_id", user_id);
