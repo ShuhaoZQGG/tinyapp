@@ -10,18 +10,6 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if (user_id && user_id != 'false') {%>
-    <h5>Signed in: <%= email %></h5> 
-    <h5 style="margin-left: 20px"><%= id %></h5>
-    <form method = "POST" action = "/logout">
-      <button type = "submit" class = "btn btn-dark" style="margin-left: 50px;">Log Out</button>
-    </form>
-    <% } else { %>
-    <form method = "GET" action = "/login" style="margin-right: 20px">
-      <button type = "submit" class = "btn btn-primary" >Log In</button>
-    </form>
-    <form method = "GET" action = "/register">
-      <button type = "submit" class = "btn btn-warning" >Register</button>
     <% if (username) {%>
     <h5>Signed in: <%= username %></h5>
     <form method = "POST" action = "/logout">
