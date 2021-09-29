@@ -24,7 +24,7 @@ app.get("/urls.json", (req, res) => {
 app.get('/urls', (req, res) => {
   const {user_id} = req.cookies;
   let templateVars = {user_id, urls: urlDatabase};
-  if (user_id) {
+  if (user_id && user_id != 'false') {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, urls: urlDatabase };
   }
@@ -41,7 +41,7 @@ app.post("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const {user_id} = req.cookies;
   let templateVars = {user_id};
-  if (user_id) {
+  if (user_id && user_id != false) {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password};
   }
@@ -49,14 +49,37 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  res.render("user_registration");
+  const statusCode = res.statusCode
+  const message = res.statusMessage
+  const templateVars =  {statusCode, message}
+  res.render('user_registration', templateVars)
 })
 
 app.post('/register', (req, res) => {
   const {email, password} = req.body;
-  const user_id = addUser(users, email, password)
-  res.cookie("user_id", user_id);
-  res.redirect("/urls")
+  let user_id = addUser(users, email, password);
+  if ( user_id === "User exists") {
+    res.statusCode = 400;
+    res.statusMessage = "User exists"
+    const statusCode = res.statusCode
+    const message = res.statusMessage
+    const templateVars =  {statusCode, message}
+    user_id = false;
+    res.cookie("user_id", user_id);
+    res.render('user_registration', templateVars)
+  } else if (user_id === "Email or Password cannot be empty" ) {
+    res.statusCode = 400;
+    res.statusMessage = "Email or Password cannot be empty"
+    const statusCode = res.statusCode
+    const message = res.statusMessage
+    const templateVars =  {statusCode, message}
+    user_id = false;
+    res.cookie("user_id", user_id);
+    res.render('user_registration', templateVars)
+  } else {
+    res.cookie("user_id", user_id);
+    res.redirect("/urls")
+  }
 })
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -64,7 +87,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
   let templateVars = {user_id, shortURL, longURL}
-  if (user_id) {
+  if (user_id && user_id != false) {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, shortURL, longURL};
   }

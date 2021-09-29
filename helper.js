@@ -16,7 +16,9 @@ const userFound = function(userDb, email) {
 
 const addUser = function(userDb, email, password) {
   if (userFound(userDb, email)) {
-    return "error: user exists";
+    return "User exists";
+  } else if (email === '' || password === '') {
+    return "Email or Password cannot be empty";
   } else {
     let id = generateRandomString();
     userDb[id] = {};
