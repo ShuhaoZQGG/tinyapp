@@ -22,6 +22,15 @@
     </form>
     <form method = "GET" action = "/register">
       <button type = "submit" class = "btn btn-warning" >Register</button>
+    <% if (username) {%>
+    <h5>Signed in: <%= username %></h5>
+    <form method = "POST" action = "/logout">
+      <button type = "submit" class = "btn btn-warning" style="margin-left: 50px;">Log Out</button>
+    </form>
+    <% } else { %>
+    <form method = "POST" action = "/login">
+    <input name = "username" type = "text" placeholder="username">
+    <button type = "submit" class = "btn btn-primary" >Sign In</button>
     </form>
     <% } %>
   </nav>
