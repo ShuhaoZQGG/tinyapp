@@ -1,8 +1,10 @@
+// Database for long and short urls
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
 
+// Database for user informations (id, email, password)
 const users = { 
   "userRandomID": {
     id: "userRandomID", 
