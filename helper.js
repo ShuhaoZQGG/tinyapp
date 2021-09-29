@@ -8,7 +8,7 @@ const generateRandomString = function() {
 const userFound = function(userDb, email) {
   for (const user in userDb) {
     if (userDb[user].email === email) {
-      return true;
+      return userDb[user];
     }
   }
   return false;
@@ -30,7 +30,18 @@ const addUser = function(userDb, email, password) {
   }
 }
 
+const login = function(userDb, email, password) {
+  if (!userFound(userDb, email)) {
+    return "Invalid Account";
+  } else if (password != userFound(userDb, email).password) {
+    return 'Invalid Password'
+  } else {
+    return userFound(userDb, email).id;
+  }
+}
+
 module.exports = {
   generateRandomString,
-  addUser
+  addUser,
+  login
 }
