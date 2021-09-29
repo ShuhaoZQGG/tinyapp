@@ -9,8 +9,6 @@ const flash = require('express-flash');
 const {users, urlDatabase} = require("./database");
 const {generateRandomString, addUser, login} = require("./helper");
 
- 
-
 // Set View Engines
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -21,7 +19,6 @@ app.use(session({
   saveUninitialized: true
   }));
 app.use(flash());
-
 
 
 
@@ -47,16 +44,6 @@ app.get('/urls', (req, res) => {
   
   res.render("urls_index", templateVars);
 })
-
-
-  const templateVars = {username: req.cookies["username"], urls: urlDatabase };
-  res.render("urls_index", templateVars);
-})
-
-app.get("/urls/new", (req, res) => {
-  const templateVars = {username: req.cookies["username"]};
-  res.render("urls_new", templateVars);
-});
 
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -121,11 +108,6 @@ app.get("/urls/:shortURL", (req, res) => {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, shortURL, longURL};
   }
-
-  const username = req.cookies["username"];
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  const templateVars = {username, shortURL, longURL};
   res.render("urls_show", templateVars);
 });
 
@@ -178,14 +160,6 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
-
-app.post("/login", (req, res) => {
-  res.cookie("username",req.body.username);
-  res.redirect('/urls');
-})
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("username");
   res.redirect('/urls');
 })
 
