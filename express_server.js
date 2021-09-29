@@ -109,6 +109,9 @@ app.post("/urls/:shortURL/update", (req, res) => {
   urlDatabase[shortURL] = req.body.newURL;
   res.redirect(`/urls/${shortURL}`);
 })
+app.get("/login", (req, res) => {
+  res.render("user_login");
+})
 
 app.post("/login", (req, res) => {
   res.cookie("username",req.body.username);
