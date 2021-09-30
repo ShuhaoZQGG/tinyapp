@@ -97,7 +97,7 @@ app.get("/urls/:shortURL", (req, res) => {
   let {user_id} = req.cookies;
   if (!users[user_id]){
     user_id = false;
-  }
+  } 
   const shortURL = req.params.shortURL;
 
   if (urlDatabase[shortURL]) {
@@ -108,6 +108,9 @@ app.get("/urls/:shortURL", (req, res) => {
       templateVars = {user_id, id, email, password, shortURL, longURL};
     }
     res.render("urls_show", templateVars);
+  } else {
+    const templateVars = {error: "The URL does not exist!"}
+    res.render("error",templateVars);
   }
 });
 
@@ -116,6 +119,9 @@ app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[shortURL]) {
     const longURL = urlDatabase[shortURL].longURL
     res.redirect(longURL);
+  } else {
+    const templateVars = {error: "The URL does not exist!"}
+    res.render("error",templateVars);
   }
 });
 
@@ -144,8 +150,25 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/update", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL].longURL = req.body.newURL;
-  res.redirect(`/urls/${shortURL}`);
+  const {user_id} = req.cookies;
+  let error;
+  let templateVars
+  if (!users[user_id]) {
+    error = 'Please Log In First!'
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (!urlDatabase[shortURL]) {
+    error = "The URL does not Exist!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID !== user_id) {
+    error = "This URL doesn't belong to you!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID === user_id) {
+    urlDatabase[shortURL].longURL = req.body.newURL;
+    res.redirect(`/urls/${shortURL}`);
+  }  
 })
 
 app.get("/login", (req, res) => {
