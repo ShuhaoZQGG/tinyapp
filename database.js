@@ -10,14 +10,6 @@ const urlDatabase = {
   example: {
     longURL: "https://www.lighthouselabs.ca/",
     userID: "default"
-  },
-  b6UTxQ: {
-      longURL: "https://www.tsn.ca",
-      userID: "default"
-  },
-  i3BoGr: {
-      longURL: "https://www.google.ca",
-      userID: "default"
   }
 };
 

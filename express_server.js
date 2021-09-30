@@ -4,8 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookies = require("cookie-parser");
-const session = require('express-session');
-const flash = require('express-flash');
+
 const {users, urlDatabase} = require("./database");
 const {generateRandomString, addUser, login, addUrl} = require("./helper");
 
@@ -13,14 +12,6 @@ const {generateRandomString, addUser, login, addUrl} = require("./helper");
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookies());
-app.use(session({
-  secret: 'djhxcvxfgshajfgjhgsjhfgsakjeauytsdfy',
-  resave: false,
-  saveUninitialized: true
-  }));
-app.use(flash());
-
-
 
 // Define get and post methods
 app.get("/", (req, res) => {
@@ -37,7 +28,6 @@ app.get('/urls', (req, res) => {
     user_id = false;
   }
   let templateVars = {user_id, urls: urlDatabase};
-  console.log(templateVars);
   if (user_id && user_id != 'false') {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, urls: urlDatabase };
@@ -169,6 +159,14 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
+  if (urlDatabase.example){
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
+  } else {
+    urlDatabase.example = {};
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
+  }
   res.redirect('/urls');
 })
 
