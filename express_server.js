@@ -4,6 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookies = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 const {users, urlDatabase} = require("./database");
 const {generateRandomString, addUser, login, addUrl} = require("./helper");
@@ -169,7 +170,7 @@ app.get('/register', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-  const {email, password} = req.body;
+  let {email, password} = req.body;
   let user_id = addUser(users, email, password);
   let {statusCode, statusMessage} = res
   if ( user_id === "User exists") {
@@ -206,9 +207,8 @@ app.get("/login", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-  const {email, password} = req.body;
+  let {email, password} = req.body;
   let {statusCode, statusMessage} = res;
-  const templateVars =  {statusCode, statusMessage}
   let user_id = login(users, email, password);
   if (user_id === "Invalid Account") {
     statusCode = 403;

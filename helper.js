@@ -1,3 +1,6 @@
+const bcrypt = require("bcryptjs");
+
+
 const { users, urlDatabase } = require('./database')
 // generate a string with 6 random characters
 
@@ -35,20 +38,23 @@ const addUser = function(userDb, email, password) {
   } else if (email === '' || password === '') {
     return "Email or Password cannot be empty";
   } else {
+    let hashedPassword = bcrypt.hashSync(password, 10);
     let id = generateRandomString();
     userDb[id] = {};
     let userId = userDb[id];
     userId.id = id;
     userId.email = email;
-    userId.password = password;
+    userId.password = hashedPassword;
     return id;
   }
 }
 
 const login = function(userDb, email, password) {
+  let hashedPassword = bcrypt.hashSync(password, 10);
+
   if (!userFound(userDb, email)) {
     return "Invalid Account";
-  } else if (password != userFound(userDb, email).password) {
+  } else if (!bcrypt.compareSync(password, userFound(userDb, email).password)) {
     return 'Invalid Password'
   } else {
     return userFound(userDb, email).id;
