@@ -1,8 +1,23 @@
-const { users } = require('./database')
+const { users, urlDatabase } = require('./database')
 // generate a string with 6 random characters
 
 const generateRandomString = function() {
   return (Math.random()*1e9).toString(36).slice(0,6);
+}
+
+const userAccess = function(urlDb, userId) {
+  for (const shortUrl in urlDb) {
+    if (urlDb[shortUrl].userID === userId) {
+      return trurlDb[shortUrl];
+    }
+  }
+  return false;
+}
+
+const addUrl = function(urlDb, shortUrl, longUrl, userId) {
+  urlDb[shortUrl] = {};
+  urlDb[shortUrl].longURL = longUrl;
+  urlDb[shortUrl].userID = userId;
 }
 
 const userFound = function(userDb, email) {
@@ -43,5 +58,7 @@ const login = function(userDb, email, password) {
 module.exports = {
   generateRandomString,
   addUser,
-  login
+  login,
+  userAccess,
+  addUrl
 }

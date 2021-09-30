@@ -7,7 +7,7 @@ const cookies = require("cookie-parser");
 const session = require('express-session');
 const flash = require('express-flash');
 const {users, urlDatabase} = require("./database");
-const {generateRandomString, addUser, login} = require("./helper");
+const {generateRandomString, addUser, login, addUrl} = require("./helper");
 
 // Set View Engines
 app.set("view engine", "ejs");
@@ -37,6 +37,7 @@ app.get('/urls', (req, res) => {
     user_id = false;
   }
   let templateVars = {user_id, urls: urlDatabase};
+  console.log(templateVars);
   if (user_id && user_id != 'false') {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, urls: urlDatabase };
@@ -44,12 +45,6 @@ app.get('/urls', (req, res) => {
   
   res.render("urls_index", templateVars);
 })
-
-app.post("/urls", (req, res) => {
-  const shortURL = generateRandomString();
-  urlDatabase[shortURL] = req.body.longURL;
-  res.redirect(`/urls/${shortURL}`);
-});
 
 app.get("/urls/new", (req, res) => {
   let {user_id} = req.cookies;
@@ -64,6 +59,14 @@ app.get("/urls/new", (req, res) => {
   } else {
     res.redirect('/urls');    
   }
+});
+
+app.post("/urls", (req, res) => {
+  let {user_id} = req.cookies;
+  const shortURL = generateRandomString();
+  const longURL = req.body.longURL
+  addUrl(urlDatabase, shortURL, longURL, user_id);
+  res.redirect(`/urls/${shortURL}`);
 });
 
 app.get('/register', (req, res) => {
@@ -102,18 +105,24 @@ app.get("/urls/:shortURL", (req, res) => {
     user_id = false;
   }
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  let templateVars = {user_id, shortURL, longURL}
-  if (user_id && user_id != false) {
-    const {id, email, password} = users[user_id]
-    templateVars = {user_id, id, email, password, shortURL, longURL};
+
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL;
+    let templateVars = {user_id, shortURL, longURL}
+    if (user_id && user_id != false) {
+      const {id, email, password} = users[user_id]
+      templateVars = {user_id, id, email, password, shortURL, longURL};
+    }
+    res.render("urls_show", templateVars);
   }
-  res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
-  res.redirect(longURL);
+  const shortURL = req.params.shortURL
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL
+    res.redirect(longURL);
+  }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -123,7 +132,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/update", (req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.newURL;
+  urlDatabase[shortURL].longURL = req.body.newURL;
   res.redirect(`/urls/${shortURL}`);
 })
 
