@@ -4,7 +4,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookies = require("cookie-parser");
-const bcrypt = require("bcryptjs");
+const cookieSession = require('cookie-session')
 
 const {users, urlDatabase} = require("./database");
 const {generateRandomString, addUser, login, addUrl} = require("./helper");
@@ -13,6 +13,13 @@ const {generateRandomString, addUser, login, addUrl} = require("./helper");
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookies());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["lol xd lmao !@#$", "f**k stFU ^&*()"],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 
 // Define get and post methods
 app.get("/", (req, res) => {
@@ -24,7 +31,7 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   if (!users[user_id]){
     user_id = false;
   }
@@ -38,7 +45,7 @@ app.get('/urls', (req, res) => {
 })
 
 app.get("/urls/new", (req, res) => {
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   if (!users[user_id]){
     user_id = false;
   }
@@ -53,7 +60,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   const shortURL = generateRandomString();
   const longURL = req.body.longURL
   if (users[user_id]){
@@ -65,7 +72,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   const shortURL = req.params.shortURL;
   if (shortURL === "example" && users[user_id]) {
     const longURL = urlDatabase[shortURL].longURL;
@@ -111,7 +118,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   let error;
   let templateVars
   if (shortURL === "example") {
@@ -138,7 +145,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/update", (req, res) => {
   const shortURL = req.params.shortURL;
-  let {user_id} = req.cookies;
+  let {user_id} = req.session;
   let error;
   let templateVars
   if (shortURL === "example") {
@@ -178,17 +185,17 @@ app.post('/register', (req, res) => {
     statusMessage = "User exists"
     const templateVars =  {statusCode, statusMessage}
     user_id = false;
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     res.render('user_registration', templateVars)
   } else if (user_id === "Email or Password cannot be empty" ) {
     statusCode = 400;
     statusMessage = "Email or Password cannot be empty"
     const templateVars =  {statusCode, statusMessage}
     user_id = false;
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     res.render('user_registration', templateVars)
   } else if (urlDatabase.example) {
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
     urlDatabase.example.userID = "default";
     res.redirect("/urls")
@@ -215,17 +222,17 @@ app.post("/login", (req, res) => {
     statusMessage = "Invalid Account"
     const templateVars =  {statusCode, statusMessage}
     user_id = false;
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     res.render("user_login", templateVars)
   } else if (user_id === "Invalid Password") {
     statusCode = 403;
     statusMessage = "Invalid Password"
     const templateVars =  {statusCode, statusMessage}
     user_id = false;
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     res.render("user_login", templateVars)
   } else if (urlDatabase.example) {
-    res.cookie("user_id", user_id);
+    req.session.user_id = user_id;
     urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
     urlDatabase.example.userID = "default";
     res.redirect('/urls');
@@ -238,7 +245,7 @@ app.post("/login", (req, res) => {
 })
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   if (urlDatabase.example){
     urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
     urlDatabase.example.userID = "default";

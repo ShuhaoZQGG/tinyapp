@@ -12,7 +12,6 @@
     </div>
     <% if (user_id && user_id != 'false' && user_id != "default") {%>
     <h5>Signed in: <%= email %></h5> 
-    <h5 style="margin-left: 20px"><%= id %></h5>
     <form method = "POST" action = "/logout">
       <button type = "submit" class = "btn btn-dark" style="margin-left: 50px;">Log Out</button>
     </form>
