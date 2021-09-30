@@ -97,10 +97,21 @@ app.get("/urls/:shortURL", (req, res) => {
   let {user_id} = req.cookies;
   if (!users[user_id]){
     user_id = false;
+    let templateVars = {error : "Please Log In First"};
+    res.render("error", templateVars)
   } 
+
   const shortURL = req.params.shortURL;
 
-  if (urlDatabase[shortURL]) {
+  if (!urlDatabase[shortURL]){
+    const templateVars = {error: "The URL does not exist!"}
+    res.render("error",templateVars);
+  }
+
+  if (urlDatabase[shortURL].userID !== user_id){
+    let templateVars = {error : "This URL does not belong to you!"};
+    res.render("error", templateVars)
+  } else {
     const longURL = urlDatabase[shortURL].longURL;
     let templateVars = {user_id, shortURL, longURL}
     if (user_id && user_id != false) {
@@ -108,10 +119,7 @@ app.get("/urls/:shortURL", (req, res) => {
       templateVars = {user_id, id, email, password, shortURL, longURL};
     }
     res.render("urls_show", templateVars);
-  } else {
-    const templateVars = {error: "The URL does not exist!"}
-    res.render("error",templateVars);
-  }
+  } 
 });
 
 app.get("/u/:shortURL", (req, res) => {
