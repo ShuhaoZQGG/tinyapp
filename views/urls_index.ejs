@@ -22,7 +22,8 @@
       </thead>
       <tbody>
         <% for(let url in urls) { %>
-          <% if (urls[url].userID === user_id || urls[url].userID === "default") {%>
+          <% if (urls[url]) { %>
+            <% if (urls[url].userID === user_id || urls[url].userID === "default") {%>
           <tr>
             <td><%= url %></td>
             <td><%= urls[url].longURL %> </td>
@@ -37,6 +38,7 @@
               </form>
             </td>
           </tr>
+            <% } %>
           <% } %>
         <% } %>
       </tbody>

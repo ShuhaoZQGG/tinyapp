@@ -6,7 +6,7 @@ const urlDatabase = {
 };
 */
 
-const urlDatabase = {
+let urlDatabase = {
   example: {
     longURL: "https://www.lighthouselabs.ca/",
     userID: "default"
@@ -14,7 +14,7 @@ const urlDatabase = {
 };
 
 // Database for user informations (id, email, password)
-const users = { 
+let users = { 
   "userRandomID": {
     id: "userRandomID", 
     email: "user@example.com", 

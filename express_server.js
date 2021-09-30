@@ -63,6 +63,105 @@ app.post("/urls", (req, res) => {
   }
 });
 
+app.get("/urls/:shortURL", (req, res) => {
+  let {user_id} = req.cookies;
+  const shortURL = req.params.shortURL;
+  if (shortURL === "example" && users[user_id]) {
+    const longURL = urlDatabase[shortURL].longURL;
+    const {id, email} = users[user_id];
+    let templateVars = {user_id, id, email, shortURL, longURL};
+    res.render("urls_show", templateVars);
+  } else if (shortURL === "example" && !users[user_id]){
+    const longURL = urlDatabase[shortURL].longURL;
+    user_id = urlDatabase[shortURL].userID;
+    let templateVars = {user_id, shortURL, longURL};
+    res.render("urls_show", templateVars);
+  } else if (!users[user_id]){
+    user_id = false;
+    let templateVars = {error : "Please Log In First"};
+    res.render("error", templateVars)
+  } else if (!urlDatabase[shortURL]){
+    const templateVars = {error: "The URL does not exist!"}
+    res.render("error",templateVars);
+  } else if (urlDatabase[shortURL].userID !== user_id){
+    let templateVars = {error : "This URL does not belong to you!"};
+    res.render("error", templateVars)
+  } else {
+    const longURL = urlDatabase[shortURL].longURL;
+    let templateVars = {user_id, shortURL, longURL}
+    if (user_id && user_id != false) {
+      const {id, email} = users[user_id]
+      templateVars = {user_id, id, email, shortURL, longURL};
+    }
+    res.render("urls_show", templateVars);
+  } 
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const shortURL = req.params.shortURL
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL
+    res.redirect(longURL);
+  } else {
+    const templateVars = {error: "The URL does not exist!"}
+    res.render("error",templateVars);
+  }
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;
+  let {user_id} = req.cookies;
+  let error;
+  let templateVars
+  if (shortURL === "example") {
+    user_id =  urlDatabase[shortURL].userID;
+    urlDatabase[shortURL] = null;
+    res.redirect("/urls");
+  } else if (!users[user_id]) {
+    error = 'Please Log In First!'
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (!urlDatabase[shortURL]) {
+    error = "The URL does not Exist!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID !== user_id) {
+    error = "This URL doesn't belong to you!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID === user_id) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } 
+})
+
+app.post("/urls/:shortURL/update", (req, res) => {
+  const shortURL = req.params.shortURL;
+  let {user_id} = req.cookies;
+  let error;
+  let templateVars
+  if (shortURL === "example") {
+    user_id =  urlDatabase[shortURL].userID;
+    urlDatabase[shortURL].longURL = req.body.newURL;
+    res.redirect(`/urls/${shortURL}`);
+  } else if (!users[user_id]) {
+    error = 'Please Log In First!'
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (!urlDatabase[shortURL]) {
+    error = "The URL does not Exist!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID !== user_id) {
+    error = "This URL doesn't belong to you!"
+    templateVars = {error};
+    res.render('error',templateVars)
+  } else if (urlDatabase[shortURL].userID === user_id) {
+    urlDatabase[shortURL].longURL = req.body.newURL;
+    res.redirect(`/urls/${shortURL}`);
+  }  
+})
+
 app.get('/register', (req, res) => {
   const {statusCode, statusMessage} = res;
   const templateVars =  {statusCode, statusMessage};
@@ -87,96 +186,17 @@ app.post('/register', (req, res) => {
     user_id = false;
     res.cookie("user_id", user_id);
     res.render('user_registration', templateVars)
-  } else {
+  } else if (urlDatabase.example) {
     res.cookie("user_id", user_id);
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
     res.redirect("/urls")
+  }  else if (!urlDatabase.example) {
+    urlDatabase.example = {};
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
+    res.redirect('/urls');
   }
-})
-
-app.get("/urls/:shortURL", (req, res) => {
-  let {user_id} = req.cookies;
-  if (!users[user_id]){
-    user_id = false;
-    let templateVars = {error : "Please Log In First"};
-    res.render("error", templateVars)
-  } 
-
-  const shortURL = req.params.shortURL;
-
-  if (!urlDatabase[shortURL]){
-    const templateVars = {error: "The URL does not exist!"}
-    res.render("error",templateVars);
-  }
-
-  if (urlDatabase[shortURL].userID !== user_id){
-    let templateVars = {error : "This URL does not belong to you!"};
-    res.render("error", templateVars)
-  } else {
-    const longURL = urlDatabase[shortURL].longURL;
-    let templateVars = {user_id, shortURL, longURL}
-    if (user_id && user_id != false) {
-      const {id, email, password} = users[user_id]
-      templateVars = {user_id, id, email, password, shortURL, longURL};
-    }
-    res.render("urls_show", templateVars);
-  } 
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL
-  if (urlDatabase[shortURL]) {
-    const longURL = urlDatabase[shortURL].longURL
-    res.redirect(longURL);
-  } else {
-    const templateVars = {error: "The URL does not exist!"}
-    res.render("error",templateVars);
-  }
-});
-
-app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const {user_id} = req.cookies;
-  let error;
-  let templateVars
-  if (!users[user_id]) {
-    error = 'Please Log In First!'
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (!urlDatabase[shortURL]) {
-    error = "The URL does not Exist!"
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (urlDatabase[shortURL].userID !== user_id) {
-    error = "This URL doesn't belong to you!"
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (urlDatabase[shortURL].userID === user_id) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls");
-  } 
-})
-
-app.post("/urls/:shortURL/update", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const {user_id} = req.cookies;
-  let error;
-  let templateVars
-  if (!users[user_id]) {
-    error = 'Please Log In First!'
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (!urlDatabase[shortURL]) {
-    error = "The URL does not Exist!"
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (urlDatabase[shortURL].userID !== user_id) {
-    error = "This URL doesn't belong to you!"
-    templateVars = {error};
-    res.render('error',templateVars)
-  } else if (urlDatabase[shortURL].userID === user_id) {
-    urlDatabase[shortURL].longURL = req.body.newURL;
-    res.redirect(`/urls/${shortURL}`);
-  }  
 })
 
 app.get("/login", (req, res) => {
@@ -204,8 +224,15 @@ app.post("/login", (req, res) => {
     user_id = false;
     res.cookie("user_id", user_id);
     res.render("user_login", templateVars)
-  } else {
+  } else if (urlDatabase.example) {
     res.cookie("user_id", user_id);
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
+    res.redirect('/urls');
+  } else if (!urlDatabase.example) {
+    urlDatabase.example = {};
+    urlDatabase.example.longURL = "https://www.lighthouselabs.ca/"
+    urlDatabase.example.userID = "default";
     res.redirect('/urls');
   }
 })
