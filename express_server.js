@@ -55,8 +55,12 @@ app.post("/urls", (req, res) => {
   let {user_id} = req.cookies;
   const shortURL = generateRandomString();
   const longURL = req.body.longURL
-  addUrl(urlDatabase, shortURL, longURL, user_id);
-  res.redirect(`/urls/${shortURL}`);
+  if (users[user_id]){
+    addUrl(urlDatabase, shortURL, longURL, user_id);
+    res.redirect(`/urls/${shortURL}`);
+  } else {
+    res.redirect(`/urls`);
+  }
 });
 
 app.get('/register', (req, res) => {
@@ -116,8 +120,18 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+  const shortURL = req.params.shortURL;
+  const {user_id} = req.cookies;
+  if (!users[user_id]) {
+    res.send('Please Log In First!')
+  } else if (!urlDatabase[shortURL]) {
+    res.send("The URL does not Exist!")
+  } else if (urlDatabase[shortURL].userID !== user_id) {
+    res.send("This URL doesn't belong to you!");
+  } else if (urlDatabase[shortURL].userID === user_id) {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  } 
 })
 
 app.post("/urls/:shortURL/update", (req, res) => {
