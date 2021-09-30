@@ -122,12 +122,20 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;
   const {user_id} = req.cookies;
+  let error;
+  let templateVars
   if (!users[user_id]) {
-    res.send('Please Log In First!')
+    error = 'Please Log In First!'
+    templateVars = {error};
+    res.render('error',templateVars)
   } else if (!urlDatabase[shortURL]) {
-    res.send("The URL does not Exist!")
+    error = "The URL does not Exist!"
+    templateVars = {error};
+    res.render('error',templateVars)
   } else if (urlDatabase[shortURL].userID !== user_id) {
-    res.send("This URL doesn't belong to you!");
+    error = "This URL doesn't belong to you!"
+    templateVars = {error};
+    res.render('error',templateVars)
   } else if (urlDatabase[shortURL].userID === user_id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
