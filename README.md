@@ -6,7 +6,6 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 ![tinyapp showcase](/captures/tinyapp.gif)
 
-!["screenshot description"](#)
 
 ## Dependencies
 
