@@ -232,6 +232,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
     res.render('error',templateVars)
   // An user can update a short URL that he/sher owns
   } else if (urlDatabase[shortURL].userID === user_id) {
+    urlDatabase[shortURL].longURL = req.body.newURL;
     res.redirect(`/urls/`);
   }  
 })
