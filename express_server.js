@@ -170,8 +170,7 @@ app.post("/urls/:shortURL/update", (req, res) => {
     templateVars = {error};
     res.render('error',templateVars)
   } else if (urlDatabase[shortURL].userID === user_id) {
-    urlDatabase[shortURL].longURL = req.body.newURL;
-    res.redirect(`/urls/${shortURL}`);
+    res.redirect(`/urls/`);
   }  
 })
 
