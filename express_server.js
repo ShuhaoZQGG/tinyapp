@@ -23,7 +23,12 @@ app.use(cookieSession({
 
 // Define get and post methods
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  let {user_id} = req.session;
+  if (!users[user_id] || !user_id){
+    res.redirect("/login");
+  } else {
+    res.redirect("/urls");
+  }
 });
 
 app.get("/urls.json", (req, res) => {
@@ -55,7 +60,7 @@ app.get("/urls/new", (req, res) => {
     templateVars = {user_id, id, email, password};
     res.render("urls_new", templateVars);
   } else {
-    res.redirect('/urls');    
+    res.redirect('/login');    
   }
 });
 
@@ -217,7 +222,6 @@ app.post("/login", (req, res) => {
   let {email, password} = req.body;
   let {statusCode, statusMessage} = res;
   let user_id = login(users, email, password);
-  console.log(users);
   if (user_id === "Invalid Account") {
     statusCode = 403;
     statusMessage = "Invalid Account"
