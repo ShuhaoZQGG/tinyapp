@@ -1,3 +1,4 @@
+// URL Databse
 let urlDatabase = {
   example: {
     longURL: "https://www.lighthouselabs.ca/",
@@ -5,6 +6,7 @@ let urlDatabase = {
   }
 };
 
+// User Database
 let users = { 
   "userRandomID": {
     id: "userRandomID", 

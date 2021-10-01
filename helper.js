@@ -1,13 +1,11 @@
 const bcrypt = require("bcryptjs");
 
-
-const { users, urlDatabase } = require('./database')
 // generate a string with 6 random characters
-
 const generateRandomString = function() {
   return (Math.random()*1e9).toString(36).slice(0,6);
 }
 
+// Check if an user has access to the URL 
 const userAccess = function(urlDb, userId) {
   for (const shortUrl in urlDb) {
     if (urlDb[shortUrl].userID === userId) {
@@ -17,12 +15,14 @@ const userAccess = function(urlDb, userId) {
   return false;
 }
 
+// Add a new short URL to the URL database
 const addUrl = function(urlDb, shortUrl, longUrl, userId) {
   urlDb[shortUrl] = {};
   urlDb[shortUrl].longURL = longUrl;
   urlDb[shortUrl].userID = userId;
 }
 
+// Look up the email (account) in the User Database
 const userFound = function(userDb, email) {
   for (const user in userDb) {
     if (userDb[user].email === email) {
@@ -32,6 +32,7 @@ const userFound = function(userDb, email) {
   return false;
 }
 
+// Add a new User into User database and return its id
 const addUser = function(userDb, email, password) {
   if (userFound(userDb, email)) {
     return "User exists";
@@ -49,6 +50,7 @@ const addUser = function(userDb, email, password) {
   }
 }
 
+// Determine if an user can successfully log in
 const login = function(userDb, email, password) {
   if (!userFound(userDb, email)) {
     return "Invalid Account";
