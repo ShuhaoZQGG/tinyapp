@@ -11,7 +11,7 @@ const generateRandomString = function() {
 const userAccess = function(urlDb, userId) {
   for (const shortUrl in urlDb) {
     if (urlDb[shortUrl].userID === userId) {
-      return trurlDb[shortUrl];
+      return urlDb[shortUrl];
     }
   }
   return false;
@@ -50,8 +50,6 @@ const addUser = function(userDb, email, password) {
 }
 
 const login = function(userDb, email, password) {
-  let hashedPassword = bcrypt.hashSync(password, 10);
-
   if (!userFound(userDb, email)) {
     return "Invalid Account";
   } else if (!bcrypt.compareSync(password, userFound(userDb, email).password)) {
@@ -62,6 +60,7 @@ const login = function(userDb, email, password) {
 }
 
 module.exports = {
+  userFound,
   generateRandomString,
   addUser,
   login,

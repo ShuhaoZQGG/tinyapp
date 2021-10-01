@@ -217,6 +217,7 @@ app.post("/login", (req, res) => {
   let {email, password} = req.body;
   let {statusCode, statusMessage} = res;
   let user_id = login(users, email, password);
+  console.log(users);
   if (user_id === "Invalid Account") {
     statusCode = 403;
     statusMessage = "Invalid Account"
