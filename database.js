@@ -1,11 +1,3 @@
-// Database for long and short urls
-/*
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
-*/
-
 let urlDatabase = {
   example: {
     longURL: "https://www.lighthouselabs.ca/",
@@ -13,7 +5,6 @@ let urlDatabase = {
   }
 };
 
-// Database for user informations (id, email, password)
 let users = { 
   "userRandomID": {
     id: "userRandomID", 
