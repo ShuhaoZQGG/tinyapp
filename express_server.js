@@ -148,7 +148,11 @@ app.get("/u/:shortURL", (req, res) => {
   // Registered User can go the the target website through short URL belonged to them
   if (users[user_id] && urlDatabase[shortURL].userID === user_id) {
     longURL = urlDatabase[shortURL].longURL
-    res.redirect(longURL);
+    if (longURL.slice(0,7) !== "http://") {
+      res.redirect(`http://${longURL}`);
+    } else {
+      res.redirect(longURL);
+    }
   // Both user or guest can go to the target website through example link
   } else if (shortURL === "example") {
     longURL = urlDatabase[shortURL].longURL
