@@ -59,7 +59,7 @@ app.get('/urls', (req, res) => {
     user_id = false;
   }
   let templateVars = {user_id, urls: urlDatabase};
-  if (user_id && user_id != 'false') {
+  if (user_id) {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password, urls: urlDatabase };
   }
@@ -75,7 +75,7 @@ app.get("/urls/new", (req, res) => {
     user_id = false;
   }
   let templateVars = {user_id};
-  if (user_id && user_id != false) {
+  if (user_id) {
     const {id, email, password} = users[user_id]
     templateVars = {user_id, id, email, password};
     res.render("urls_new", templateVars);
@@ -130,7 +130,7 @@ app.get("/urls/:shortURL", (req, res) => {
   } else {
     const longURL = urlDatabase[shortURL].longURL;
     let templateVars = {user_id, shortURL, longURL}
-    if (user_id && user_id != false) {
+    if (user_id) {
       const {id, email} = users[user_id]
       templateVars = {user_id, id, email, shortURL, longURL};
     }
