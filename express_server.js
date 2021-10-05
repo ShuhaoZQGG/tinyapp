@@ -5,9 +5,11 @@ const PORT = 8080; // default port 8080
 const bodyParser = require("body-parser");
 const cookies = require("cookie-parser");
 const cookieSession = require('cookie-session')
+const methodOverride = require('method-override')
 
 const {users, urlDatabase} = require("./database");
 const {generateRandomString, addUser, login, addUrl} = require("./helper");
+app.use(methodOverride('X-HTTP-Method-Override')) //To Do Later
 
 // Set View Engines
 app.set("view engine", "ejs");
