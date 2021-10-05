@@ -53,6 +53,30 @@ app.get("/", (req, res) => {
    They can only update and delete an example link and they cannot create a new link.
 */
 
+
+/*
+Extend your TinyURL project with the following features:
+
+keep track of how many times a given short URL is visited and display it on the edit page for the url
+
+keep track of how many UNIQUE visitors visit each url (set a cookie to track of distinct users), display this along side the total visitors number
+
+keep track of every visit (timestamp, and a generated visitor_id) and display the list on the URL edit page
+*/
+
+/*
+GET /urls
+
+(Stretch) the date the short URL was created
+(Stretch) the number of times the short URL was visited
+(Stretch) the number number of unique visits for the short URL
+*/
+
+/*
+(Stretch) the date the short URL was created
+(Stretch) the number of times the short URL was visited
+(Stretch) the number of unique visits for the short URL
+*/
 app.get('/urls', (req, res) => {
   let {user_id} = req.session;
   if (!users[user_id]){
